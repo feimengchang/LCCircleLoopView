@@ -34,7 +34,8 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
     // index
     private var currentIndex: NSInteger = 0
     private var nextIndex: NSInteger = 1
-    private var previousIndex: NSInteger = 2
+    //need update in setImgNames:
+    private var previousIndex: NSInteger = 0
     
     private var pageIndicator:      UIPageControl!
     private var timer: NSTimer!
@@ -59,6 +60,8 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
             print("error: need three photos at least！")
             return
         }
+        //update previousIndex to new value
+        previousIndex = imgNames.count - 1
         //set pageControl
         pageIndicator.numberOfPages = imgNames.count
         //set timer
@@ -149,6 +152,7 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
     
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
         let offset = scrollView.contentOffset.x
+        
         if offset == 0 {
             previousIndex = getImgIndex(index: previousIndex, left: true)
             currentIndex = getImgIndex(index: currentIndex, left: true)
