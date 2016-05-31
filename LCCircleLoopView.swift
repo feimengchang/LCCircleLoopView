@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LCCircleLoopView: UIView {
+class LCCircleLoopView: UIView, UIScrollViewDelegate {
 
     var containerScrollView: UIScrollView!
     var imgNames: [String]!
@@ -38,6 +38,7 @@ class LCCircleLoopView: UIView {
         currentImgView.image = UIImage(named: imgNames[currentIndex])
         nextImgView.image = UIImage(named: imgNames[nextIndex])
         previousImgView.image = UIImage(named: imgNames[previousIndex])
+        containerScrollView.setContentOffset(CGPointMake(bounds.size.width, 0), animated: false)
     }
     
     //MARK: -
@@ -58,7 +59,10 @@ class LCCircleLoopView: UIView {
         containerScrollView.contentSize = CGSizeMake(bounds.size.width * 3, bounds.size.height)
         containerScrollView.pagingEnabled = true
         containerScrollView.autoresizingMask = [UIViewAutoresizing.FlexibleWidth, UIViewAutoresizing.FlexibleHeight]
+        containerScrollView.delegate = self
         addSubview(containerScrollView)
+        
+        containerScrollView.setContentOffset(CGPointMake(bounds.size.width, 0), animated: false)
         
         currentImgView = UIImageView()
         currentImgView.frame = CGRectMake(bounds.size.width, 0, bounds.size.width, bounds.size.height)
@@ -81,4 +85,42 @@ class LCCircleLoopView: UIView {
         previousImgView.clipsToBounds = true
         containerScrollView.addSubview(previousImgView)
     }
+    
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        
+    }
+    
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        let offset = scrollView.contentOffset.x
+        if offset == 0 {
+            previousIndex = getImgIndex(index: previousIndex, left: true)
+            currentIndex = getImgIndex(index: currentIndex, left: true)
+            nextIndex = getImgIndex(index: nextIndex, left: true)
+        }else if offset == self.frame.size.width * 2 {
+            previousIndex = getImgIndex(index: previousIndex, left: false)
+            currentIndex = getImgIndex(index: currentIndex, left: false)
+            nextIndex = getImgIndex(index: nextIndex, left: false)
+        }
+        // update UI
+        updateScrollView()
+    }
+    
+    func getImgIndex(index index: NSInteger, left: Bool) -> NSInteger {
+        if left == true {
+            let tmpIndex = index - 1
+            if tmpIndex == -1 {
+                return imgNames.count - 1
+            } else {
+                return tmpIndex
+            }
+        } else {
+            let tmpIndex = index + 1
+            if tmpIndex >= imgNames.count {
+                return 0
+            } else {
+                return tmpIndex
+            }
+        }
+    }
+    
 }
