@@ -10,14 +10,18 @@ import UIKit
 
 class LCCircleLoopView: UIView, UIScrollViewDelegate {
 
-    var containerScrollView: UIScrollView!
+    
+    private var containerScrollView: UIScrollView!
     var imgNames: [String]!
-    var containerImgViews: [UIImageView]!
+    private  var containerImgViews: [UIImageView]!
     
     //
     var currentImgView:     UIImageView!
     var nextImgView:        UIImageView!
     var previousImgView:    UIImageView!
+    
+    var pageIndicator:      UIPageControl!
+    
     // index
     var currentIndex: NSInteger = 1
     var nextIndex: NSInteger = 2
@@ -31,6 +35,7 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
             print("error: need three photos at least！")
             return
         }
+        pageIndicator.numberOfPages = imgNames.count
         updateScrollView()
     }
     
@@ -59,6 +64,7 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
         containerScrollView.contentSize = CGSizeMake(bounds.size.width * 3, bounds.size.height)
         containerScrollView.pagingEnabled = true
         containerScrollView.autoresizingMask = [UIViewAutoresizing.FlexibleWidth, UIViewAutoresizing.FlexibleHeight]
+        containerScrollView.showsHorizontalScrollIndicator = false
         containerScrollView.delegate = self
         addSubview(containerScrollView)
         
@@ -84,6 +90,15 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
         previousImgView.contentMode = UIViewContentMode.ScaleAspectFill
         previousImgView.clipsToBounds = true
         containerScrollView.addSubview(previousImgView)
+        
+        //pageIndicator
+        pageIndicator = UIPageControl(frame: CGRectMake(0,bounds.size.height - 20, bounds.size.width, 20))
+        pageIndicator.center = CGPoint(x: bounds.size.width / 2.0, y: pageIndicator.center.y)
+        pageIndicator.hidesForSinglePage = true
+        pageIndicator.numberOfPages = 0
+        pageIndicator.backgroundColor = UIColor.clearColor()
+        addSubview(pageIndicator)
+        
     }
     
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
@@ -101,6 +116,8 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
             currentIndex = getImgIndex(index: currentIndex, left: false)
             nextIndex = getImgIndex(index: nextIndex, left: false)
         }
+        //set currentPage
+        pageIndicator.currentPage = getImgIndex(index: currentIndex, left: true)
         // update UI
         updateScrollView()
     }
