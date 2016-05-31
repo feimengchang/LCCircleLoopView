@@ -8,34 +8,62 @@
 
 import UIKit
 
-class LCCircleLoopView: UIView, UIScrollViewDelegate {
+let LCCircleLoopViewTimeInterval = 2.0
 
+@objc protocol LCCircleLoopViewDelegate: class {
+    /**
+     LCCircleLoopView tap action delegate
+     - parameter currentIndex: the index of current image
+     */
+    optional
+    func clickedImageAction(currentIndex: NSInteger)
+}
+
+class LCCircleLoopView: UIView, UIScrollViewDelegate {
     
+    weak var delegate: LCCircleLoopViewDelegate?
+    
+    private var imgNames: [String]!
     private var containerScrollView: UIScrollView!
-    var imgNames: [String]!
     private  var containerImgViews: [UIImageView]!
     
-    //
-    var currentImgView:     UIImageView!
-    var nextImgView:        UIImageView!
-    var previousImgView:    UIImageView!
-    
-    var pageIndicator:      UIPageControl!
+    private var currentImgView:     UIImageView!
+    private var nextImgView:        UIImageView!
+    private var previousImgView:    UIImageView!
     
     // index
-    var currentIndex: NSInteger = 1
-    var nextIndex: NSInteger = 2
-    var previousIndex: NSInteger = 0
+    private var currentIndex: NSInteger = 0
+    private var nextIndex: NSInteger = 1
+    private var previousIndex: NSInteger = 2
+    
+    private var pageIndicator:      UIPageControl!
+    private var timer: NSTimer!
     
     //MARK: -
     //MARK: public func
+    func startTimer() {
+        if timer == nil {
+            self.timer = NSTimer.scheduledTimerWithTimeInterval(LCCircleLoopViewTimeInterval, target: self, selector: #selector(LCCircleLoopView.timerAction), userInfo: nil, repeats: true)
+        }
+    }
+    
+    func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
     func setImgNames(imgNamesArray imgNamesArray: [String]) {
         imgNames = imgNamesArray
-        if imgNames.count < 3 { //至少3张图片
+        //required  three photos at least
+        if imgNames.count < 3 {
             print("error: need three photos at least！")
             return
         }
+        //set pageControl
         pageIndicator.numberOfPages = imgNames.count
+        //set timer
+        startTimer()
+        //update scrollView UI
         updateScrollView()
     }
     
@@ -46,7 +74,12 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
         containerScrollView.setContentOffset(CGPointMake(bounds.size.width, 0), animated: false)
     }
     
+    func timerAction()  {
+        containerScrollView.setContentOffset(CGPointMake(bounds.size.width * 2, 0), animated: true)
+    }
+    
     //MARK: -
+    //MARK: life cycle
     required override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -99,10 +132,19 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
         pageIndicator.backgroundColor = UIColor.clearColor()
         addSubview(pageIndicator)
         
+        //add tap action
+        let tap = UITapGestureRecognizer(target: self, action: #selector(LCCircleLoopView.tapClicked(_:)))
+        containerScrollView.addGestureRecognizer(tap)
     }
     
+    func tapClicked(tapGR: UITapGestureRecognizer) {
+        self.delegate?.clickedImageAction!(currentIndex)
+    }
+    
+    //MARK: - 
+    //MARK: scroll delegate
     func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        
+        stopTimer()
     }
     
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
@@ -117,12 +159,19 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
             nextIndex = getImgIndex(index: nextIndex, left: false)
         }
         //set currentPage
-        pageIndicator.currentPage = getImgIndex(index: currentIndex, left: true)
-        // update UI
+        pageIndicator.currentPage = currentIndex
+        //update UI
         updateScrollView()
+        //reset timer
+        startTimer()
     }
     
-    func getImgIndex(index index: NSInteger, left: Bool) -> NSInteger {
+    //timer action set contentoffset then take this function
+    func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView) {
+        self.scrollViewDidEndDecelerating(scrollView)
+    }
+    
+    private func getImgIndex(index index: NSInteger, left: Bool) -> NSInteger {
         if left == true {
             let tmpIndex = index - 1
             if tmpIndex == -1 {
@@ -139,5 +188,11 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
             }
         }
     }
+    
+    //MARK: dealloc(OC), deinit(swift)
+    deinit {
+        stopTimer()
+    }
+    
     
 }
