@@ -16,11 +16,29 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tZC-8m-q3y" customClass="LCCircleLoopView" customModule="LCCircleLoopView" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="84" width="600" height="92"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="92" id="aAn-5T-PeK"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="tZC-8m-q3y" secondAttribute="trailing" id="Ygc-Dn-pvF"/>
+                            <constraint firstItem="tZC-8m-q3y" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="64" id="ivt-IA-l9k"/>
+                            <constraint firstItem="tZC-8m-q3y" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="qEv-Ed-f6M"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="circleView" destination="tZC-8m-q3y" id="ltO-4B-bCG"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="198" y="137"/>
         </scene>
     </scenes>
 </document>

@@ -60,6 +60,8 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
             print("error: need three photos at least！")
             return
         }
+        //updateUI
+        updateUI()
         //update previousIndex to new value
         previousIndex = imgNames.count - 1
         //set pageControl
@@ -96,40 +98,36 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
     func  setupUI() {
         //use bounds not frame
         containerScrollView = UIScrollView()
-        containerScrollView.frame = bounds
-        containerScrollView.contentSize = CGSizeMake(bounds.size.width * 3, bounds.size.height)
+
         containerScrollView.pagingEnabled = true
         containerScrollView.autoresizingMask = [UIViewAutoresizing.FlexibleWidth, UIViewAutoresizing.FlexibleHeight]
         containerScrollView.showsHorizontalScrollIndicator = false
         containerScrollView.delegate = self
         addSubview(containerScrollView)
         
-        containerScrollView.setContentOffset(CGPointMake(bounds.size.width, 0), animated: false)
         
         currentImgView = UIImageView()
-        currentImgView.frame = CGRectMake(bounds.size.width, 0, bounds.size.width, bounds.size.height)
         currentImgView.userInteractionEnabled = true
         currentImgView.contentMode = UIViewContentMode.ScaleAspectFill
         currentImgView.clipsToBounds = true
         containerScrollView.addSubview(currentImgView)
         
         nextImgView = UIImageView()
-        nextImgView.frame = CGRectMake(bounds.size.width * 2, 0, bounds.size.width, bounds.size.height)
+        
         nextImgView.userInteractionEnabled = true
         nextImgView.contentMode = UIViewContentMode.ScaleAspectFill
         nextImgView.clipsToBounds = true
         containerScrollView.addSubview(nextImgView)
         
         previousImgView = UIImageView()
-        previousImgView.frame = CGRectMake(0, 0, bounds.size.width, bounds.size.height)
         previousImgView.userInteractionEnabled = true
         previousImgView.contentMode = UIViewContentMode.ScaleAspectFill
         previousImgView.clipsToBounds = true
         containerScrollView.addSubview(previousImgView)
         
         //pageIndicator
-        pageIndicator = UIPageControl(frame: CGRectMake(0,bounds.size.height - 20, bounds.size.width, 20))
-        pageIndicator.center = CGPoint(x: bounds.size.width / 2.0, y: pageIndicator.center.y)
+        pageIndicator = UIPageControl()
+       
         pageIndicator.hidesForSinglePage = true
         pageIndicator.numberOfPages = 0
         pageIndicator.backgroundColor = UIColor.clearColor()
@@ -138,6 +136,23 @@ class LCCircleLoopView: UIView, UIScrollViewDelegate {
         //add tap action
         let tap = UITapGestureRecognizer(target: self, action: #selector(LCCircleLoopView.tapClicked(_:)))
         containerScrollView.addGestureRecognizer(tap)
+        
+        //updateUI
+        updateUI()
+    }
+    
+    //awake from XIB
+    func updateUI() {
+        containerScrollView.frame = bounds
+        containerScrollView.contentSize = CGSizeMake(bounds.size.width * 3, bounds.size.height)
+        containerScrollView.setContentOffset(CGPointMake(bounds.size.width, 0), animated: false)
+        
+        currentImgView.frame = CGRectMake(bounds.size.width, 0, bounds.size.width, bounds.size.height)
+        nextImgView.frame = CGRectMake(bounds.size.width * 2, 0, bounds.size.width, bounds.size.height)
+        previousImgView.frame = CGRectMake(0, 0, bounds.size.width, bounds.size.height)
+        
+        pageIndicator.frame = CGRectMake(0,bounds.size.height - 20, bounds.size.width, 20)
+        pageIndicator.center = CGPoint(x: bounds.size.width / 2.0, y: pageIndicator.center.y)
     }
     
     func tapClicked(tapGR: UITapGestureRecognizer) {
