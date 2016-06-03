@@ -14,7 +14,7 @@ class ViewController: UIViewController, LCCircleLoopViewDelegate {
         super.viewDidLoad()
         let circleView = LCCircleLoopView(frame: CGRectMake(0, 100, view.frame.size.width, 200) )
         circleView.delegate = self
-        circleView.setImgNames(imgNamesArray: ["girl.jpg", "shu.jpg", "Narutos.jpg", "bear.jpg"])
+        circleView.setImgNames(imgNamesArray: ["lunbo1", "lunbo2", "lunbo3", "lunbo4"])
         view.addSubview(circleView)
     }
 
